@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Silk Road Horizons — Туристическое агентство</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050814;
+      --card: rgba(14, 21, 44, 0.92);
+      --border: rgba(56, 189, 248, 0.28);
+      --cyan: #00f0ff;
+      --purple: #8b5cf6;
+      --orange: #ff6b35;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+      background-image: radial-gradient(circle at 20% 20%, rgba(139,92,246,0.18), transparent 45%),
+                        radial-gradient(circle at 80% 80%, rgba(0,240,255,0.15), transparent 45%);
+    }
+    #space { position: fixed; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+    .container { max-width: 1180px; margin: 0 auto; padding: 0 18px; }
+    
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(5, 8, 20, 0.95); border-bottom: 1px solid var(--border); padding: 14px 0;
+    }
+    .nav { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--cyan); text-decoration: none; }
+    
+    .langs { display: flex; gap: 4px; background: rgba(255,255,255,0.08); padding: 3px; border-radius: 20px; }
+    .langs button {
+      background: none; border: none; color: var(--muted); font-weight: 700;
+      padding: 5px 10px; border-radius: 16px; cursor: pointer; font-size: 0.78rem;
+    }
+    .langs button.active { background: var(--cyan); color: #050814; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 20px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; text-decoration: none; font-size: 0.95rem;
+    }
+    .btn-main { background: linear-gradient(135deg, var(--cyan), var(--purple)); color: #050814; }
+    .btn-tg { background: #229ED9; color: #fff; }
+
+    .hero { text-align: center; padding: 75px 0 50px; }
+    .hero h1 { 
+      font-family: 'Montserrat', sans-serif; 
+      font-size: clamp(2.3rem, 5.5vw, 3.8rem); 
+      font-weight: 800; 
+      line-height: 1.15; 
+      margin-bottom: 20px; 
+    }
+    .hero h1 span { color: var(--cyan); }
+    .hero p { 
+      color: var(--text); 
+      font-size: clamp(1.1rem, 2.5vw, 1.35rem); 
+      font-weight: 500;
+      max-width: 720px; 
+      margin: 0 auto 30px; 
+      opacity: 0.9;
+    }
+    .hero-btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+
+    section { padding: 48px 0; }
+    h2 { font-family: 'Montserrat', sans-serif; font-size: clamp(1.6rem, 4vw, 2.4rem); text-align: center; margin-bottom: 10px; }
+    .sub { text-align: center; color: var(--muted); margin-bottom: 28px; }
+
+    .filters { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 24px; }
+    .filters button {
+      background: var(--card); border: 1px solid var(--border); color: var(--muted);
+      padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: 600;
+    }
+    .filters button.active { background: var(--cyan); color: #050814; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 22px; }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+      overflow: hidden; display: flex; flex-direction: column;
+    }
+    
+    /* Галерея фото карточки с плавной сменой при наведении */
+    .gallery-wrap { position: relative; height: 190px; background: #1e293b; overflow: hidden; }
+    .gallery-wrap img { 
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; 
+      opacity: 0; transition: opacity 0.5s ease-in-out; pointer-events: none;
+    }
+    .gallery-wrap img.active { opacity: 1; pointer-events: auto; }
+    
+    .gallery-btns {
+      position: absolute; bottom: 8px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; z-index: 5;
+    }
+    .g-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); border: none; cursor: pointer; transition: 0.3s;
+    }
+    .g-dot.active { background: var(--cyan); width: 20px; border-radius: 4px; }
+
+    .card-body { padding: 18px; display: flex; flex-direction: column; flex: 1; }
+    .card h3 { font-family: 'Montserrat', sans-serif; margin-bottom: 6px; font-size: 1.15rem; }
+    .card p { color: var(--muted); font-size: 0.9rem; margin-bottom: 14px; flex: 1; }
+    .card-foot { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; }
+    .price { color: var(--orange); font-weight: 800; font-size: 1.2rem; }
+
+    .box {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+      padding: clamp(20px, 4vw, 38px); display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 28px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 5px; }
+    .form-group input {
+      width: 100%; padding: 11px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: #060b19; color: #fff; font-size: 0.95rem; outline: none;
+    }
+
+    .id-card-group { display: flex; gap: 8px; }
+    .id-series { width: 85px !important; text-transform: uppercase; text-align: center; font-weight: 700; letter-spacing: 1px; }
+    .id-number { flex: 1; }
+
+    .cash-note {
+      background: rgba(255, 107, 53, 0.14); border: 1px solid var(--orange);
+      color: #ffd6c4; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; margin-bottom: 14px;
+    }
+    .contact-card {
+      display: flex; align-items: center; gap: 12px; padding: 14px;
+      background: rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 12px; text-decoration: none; color: #fff; font-weight: 600;
+    }
+
+    .modal-bg {
+      position: fixed; inset: 0; background: rgba(2,4,12,0.9); display: none;
+      align-items: center; justify-content: center; padding: 16px; z-index: 200;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: #0d142b; border: 1px solid var(--cyan); border-radius: 20px;
+      max-width: 440px; width: 100%; padding: 24px; position: relative; max-height: 90vh; overflow-y: auto;
+    }
+    .close-x { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+    
+    .ticket-box {
+      border: 1px dashed var(--cyan); background: rgba(0, 240, 255, 0.06);
+      padding: 16px; border-radius: 14px; margin: 14px 0;
+    }
+
+    footer { text-align: center; padding: 26px 0; border-top: 1px solid var(--border); color: var(--muted); font-size: 0.88rem; }
+  </style>
+</head>
+<body>
+  <canvas id="space"></canvas>
+
+  <header>
+    <div class="container nav">
+      <a href="#" class="logo">🚀 Silk Road Horizons</a>
+      <div class="langs">
+        <button class="active" onclick="setLang('ru', this)">RU</button>
+        <button onclick="setLang('uz', this)">UZ</button>
+        <button onclick="setLang('en', this)">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <h1 data-i="hero_h">Открой космос путешествий с <span>Silk Road Horizons</span></h1>
+      <p data-i="hero_p">Лучшие туры из Узбекистана по всему миру. Подарите себе незабываемый отпуск и яркие эмоции вместе с нами!</p>
+      <div class="hero-btns">
+        <a href="#tours" class="btn btn-main" data-i="btn_tours">Выбрать направление</a>
+        <a href="https://t.me/doni_221" target="_blank" class="btn btn-tg">✈️ Telegram: @doni_221</a>
+      </div>
+    </div>
+
+    <!-- НАПРАВЛЕНИЯ -->
+    <section id="tours">
+      <h2 data-i="sec_tours">Популярные направления</h2>
+      <p class="sub" data-i="sec_tours_sub">Наведите курсор на фото для просмотра или листайте точки</p>
+      <div class="filters">
+        <button class="active" onclick="filterTours('all', this)" data-i="f_all">Все</button>
+        <button onclick="filterTours('beach', this)" data-i="f_beach">Пляжи</button>
+        <button onclick="filterTours('city', this)" data-i="f_city">Города</button>
+        <button onclick="filterTours('nature', this)" data-i="f_nature">Горы и природа</button>
+        <button onclick="filterTours('history', this)" data-i="f_hist">История</button>
+      </div>
+      <div class="grid" id="toursGrid"></div>
+    </section>
+
+    <!-- КОНТАКТЫ -->
+    <section id="booking">
+      <div class="box" style="margin: 0 auto; max-width: 650px;">
+        <div id="contacts">
+          <h3 style="margin-bottom:12px; font-size:1.4rem;" data-i="cont_h">Наши контакты</h3>
+          <p style="color:var(--muted); margin-bottom:18px;" data-i="cont_p">Свяжитесь с нами удобным способом — поможем подобрать отель, авиабилеты и страховку.</p>
+          <a href="tel:+998777775412" class="contact-card">📞 +998 77 777 54 12</a>
+          <a href="https://t.me/doni_221" target="_blank" class="contact-card" style="border:1px solid #229ED9;">✈️ Telegram: @doni_221</a>
+          <a href="mailto:donierpahlavonov69@gmail.com" class="contact-card">✉️ donierpahlavonov69@gmail.com</a>
+          <div class="contact-card">📍 <span data-i="addr">Самарканд / Ташкент • Работаем 24/7</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 Silk Road Horizons | +998 77 777 54 12 | @doni_221
+  </footer>
+
+  <!-- МОДАЛЬНОЕ ОКНО БРОНИРОВАНИЯ С ПРОСМОТРОМ ФОТО -->
+  <div class="modal-bg" id="bookModal">
+    <div class="modal">
+      <button class="close-x" onclick="closeModals()">×</button>
+      <h3 id="modalTitle" style="margin-bottom: 4px;">Бронирование</h3>
+      <p id="modalPrice" style="color:var(--orange); font-weight:800; margin-bottom:12px;"></p>
+      
+      <!-- Просмотр фото выбранного тура в модалке -->
+      <div class="gallery-wrap" id="modalGallery" style="border-radius: 12px; margin-bottom: 16px; height: 180px;" onmouseenter="startModalHover()" onmouseleave="stopModalHover()"></div>
+
+      <form onsubmit="submitBooking(event)">
+        <div class="form-group">
+          <label data-i="lbl_name">Фамилия и Имя (только буквы)</label>
+          <input type="text" id="pName" class="no-num" required placeholder="Каримов Азиз">
+        </div>
+        <div class="form-group">
+          <label data-i="lbl_id">ID-карта (Серия и 7 цифр номера)</label>
+          <div class="id-card-group">
+            <input type="text" id="pIdSeries" class="id-series" maxlength="2" required placeholder="AE">
+            <input type="text" id="pIdNum" class="id-number" maxlength="7" required placeholder="3499562">
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i="lbl_phone">Номер телефона (только цифры и символы +, -)</label>
+          <input type="tel" id="pPhone" class="phone-strict" required placeholder="+998 90 123 45 67">
+        </div>
+        <div class="cash-note" data-i="cash_info">💵 Платёж будет оформлен наличными при подтверждении брони.</div>
+        <button type="submit" class="btn btn-main" style="width:100%" data-i="btn_submit">Забронировать билет</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- КРЕАТИВНОЕ ОКНО ПОДТВЕРЖДЕНИЯ -->
+  <div class="modal-bg" id="successModal">
+    <div class="modal" style="text-align:center;">
+      <button class="close-x" onclick="closeModals()">×</button>
+      <div style="font-size:2.6rem;">🛸✨</div>
+      <h3 style="color:var(--cyan); margin:8px 0;" data-i="ok_title">Заявка принята на орбиту!</h3>
+      <p style="color:var(--muted); font-size:0.92rem;" data-i="ok_desc">
+        Ваш маршрут передан в центр управления полётами Silk Road Horizons. Мы уже обрабатываем данные и скоро свяжемся с вами!
+      </p>
+      <div class="ticket-box" id="ticketSummary" style="text-align:left; font-size:0.9rem;"></div>
+      <div class="cash-note" data-i="ok_cash">💵 Внимание: платёж будет оформлен наличными при подтверждении брони.</div>
+      <a id="tgConfirmBtn" href="https://t.me/doni_221" target="_blank" class="btn btn-tg" style="width:100%; margin-top:8px;">
+        ✈️ Написать менеджеру @doni_221
+      </a>
+    </div>
+  </div>
+
+  <script>
+    const TOURS = [
+      { cat: 'beach', price: '$1 290', 
+        imgs: [
+          'https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1573843981267-be1999ff37cd?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Мальдивы, Атолл Баа', '7 ночей • Всё включено, вилла у океана'],
+        uz: ['Maldiv orollari', '7 kecha • Hammasi ichida, okean bo‘yidagi villa'],
+        en: ['Maldives, Baa Atoll', '7 nights • All-inclusive oceanfront villa'] },
+      { cat: 'city', price: '$680', 
+        imgs: [
+          'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1580674684081-7617fbf3d745?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Дубай, ОАЭ', '5 ночей • Бурдж-Халифа, сафари и пляж Джумейра'],
+        uz: ['Dubay, BAA', '5 kecha • Burj Xalifa, safari va Jumeyra plyaji'],
+        en: ['Dubai, UAE', '5 nights • Burj Khalifa, desert safari & Jumeirah'] },
+      { cat: 'history', price: '$540', 
+        imgs: [
+          'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1541432901042-2d8bd64b4a9b?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1527838832700-5059252407fa?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Стамбул, Турция', '6 ночей • Прогулки по Босфору и древний город'],
+        uz: ['Istanbul, Turkiya', '6 kecha • Bosfor sayohati va qadimiy shahar'],
+        en: ['Istanbul, Turkey', '6 nights • Bosphorus cruise & historic old town'] },
+      { cat: 'nature', price: '$1 150', 
+        imgs: [
+          'https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1570789210967-2cac24afeb00?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Остров Бали, Индонезия', '8 ночей • Тропические джунгли, водопады и океан'],
+        uz: ['Bali oroli, Indoneziya', '8 kecha • Tropik o‘rmonlar, sharsharalar va okean'],
+        en: ['Bali, Indonesia', '8 nights • Tropical jungles, waterfalls & surfing'] },
+      { cat: 'nature', price: '$1 490', 
+        imgs: [
+          'https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Швейцарские Альпы', '6 ночей • Горные озёра и панорамные поезда'],
+        uz: ['Shveytsariya Alp tog‘lari', '6 kecha • Tog‘ ko‘llari va panoramali poyezdlar'],
+        en: ['Swiss Alps', '6 nights • Alpine lakes & scenic mountain trains'] },
+      { cat: 'city', price: '$1 620', 
+        imgs: [
+          'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Токио, Япония', '7 ночей • Неоновый мегаполис, сакура и храмы'],
+        uz: ['Tokio, Yaponiya', '7 kecha • Neon megapolis, sakura va ibodatxonalar'],
+        en: ['Tokyo, Japan', '7 nights • Neon metropolis, sakura & temples'] },
+      { cat: 'beach', price: '$620', 
+        imgs: [
+          'https://images.unsplash.com/photo-1539768942893-daf53e448371?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1568322445785-516655c66d1b?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Шарм-эль-Шейх, Египет', '7 ночей • Красное море, дайвинг и пирамиды'],
+        uz: ['Sharm-el-Shayx, Misr', '7 kecha • Qizil dengiz, dayving va piramidalar'],
+        en: ['Sharm El Sheikh, Egypt', '7 nights • Red Sea diving & Great Pyramids'] },
+      { cat: 'history', price: '$1 350', 
+        imgs: [
+          'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1511739001486-6bfe10ce785f?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1509439543977-0737ee6c518a?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Париж, Франция', '6 ночей • Эйфелева башня, Лувр и круиз по Сене'],
+        uz: ['Parij, Fransiya', '6 kecha • Eyfel minorasi, Luvr va Sena kruizi'],
+        en: ['Paris, France', '6 nights • Eiffel Tower, Louvre & Seine cruise'] },
+      { cat: 'history', price: '$290', 
+        imgs: [
+          'https://images.unsplash.com/photo-1596484552834-6a58f850e0a1?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=700&q=80',
+          'https://images.unsplash.com/photo-1609137144813-7d94c166d73e?auto=format&fit=crop&w=700&q=80'
+        ],
+        ru: ['Самарканд и Бухара', '4 дня • Площадь Регистан и легенды Шёлкового пути'],
+        uz: ['Samarqand va Buxoro', '4 kun • Registon maydoni va Ipak yo‘li afsonalari'],
+        en: ['Samarkand & Bukhara', '4 days • Registan Square & Silk Road heritage'] }
+    ];
+
+    const TEXT = {
+      ru: {
+        hero_h: 'Открой космос путешествий с <span>Silk Road Horizons</span>',
+        hero_p: 'Лучшие туры из Узбекистана по всему миру. Подарите себе незабываемый отпуск и яркие эмоции вместе с нами!',
+        btn_tours: 'Выбрать направление', sec_tours: 'Популярные направления',
+        sec_tours_sub: 'Наведите курсор на фото для просмотра или листайте точки',
+        f_all: 'Все', f_beach: 'Пляжи', f_city: 'Города', f_nature: 'Горы и природа', f_hist: 'История',
+        lbl_name: 'Фамилия и Имя (только буквы)', lbl_id: 'ID-карта (Серия и 7 цифр номера)',
+        lbl_phone: 'Номер телефона (только цифры и знаки +, -)',
+        cash_info: '💵 Платёж будет оформлен наличными при подтверждении брони.',
+        btn_submit: 'Забронировать билет', cont_h: 'Наши контакты',
+        cont_p: 'Свяжитесь с нами удобным способом — поможем подобрать отель, авиабилеты и страховку.',
+        addr: 'Самарканд / Ташкент • Работаем 24/7', book_card: 'Забронировать',
+        ok_title: 'Заявка принята на орбиту!',
+        ok_desc: 'Ваш маршрут передан в центр управления полётами Silk Road Horizons. Мы уже обрабатываем данные и скоро свяжемся с вами!',
+        ok_cash: '💵 Платёж будет оформлен наличными.'
+      },
+      uz: {
+        hero_h: '<span>Silk Road Horizons</span> bilan sayohatlar koinotini kashf eting',
+        hero_p: 'O‘zbekistondan butun dunyo bo‘ylab eng yaxshi turlar. O‘zingizga unutilmas ta’til va yorqin taassurotlar tuhfa eting!',
+        btn_tours: 'Yo‘nalishni tanlash', sec_tours: 'Ommabop yo‘nalishlar',
+        sec_tours_sub: 'Rasmlarni ko‘rish uchun kursor olib boring yoki nuqtalarni bosing',
+        f_all: 'Barchasi', f_beach: 'Plyajlar', f_city: 'Shaharlar', f_nature: 'Tog‘ va tabiat', f_hist: 'Tarix',
+        lbl_name: 'Familiya va Ism (faqat harflar)', lbl_id: 'ID-karta (Seriya va 7 ta raqam)',
+        lbl_phone: 'Telefon raqami (faqat raqamlar va +, -)',
+        cash_info: '💵 To‘lov band qilish tasdiqlanganda naqd pul ko‘rinishida amalga oshiriladi.',
+        btn_submit: 'Chiptani band qilish', cont_h: 'Bizning kontaktlar',
+        cont_p: 'Qulay usulda bog‘laning — mehmonxona, aviachipta va sug‘urta tanlashda yordam beramiz.',
+        addr: 'Samarqand / Toshkent • 24/7 ishlaymiz', book_card: 'Band qilish',
+        ok_title: 'Arizangiz orbitaga qabul qilindi!',
+        ok_desc: 'Yo‘nalishingiz Silk Road Horizons parvozlarni boshqarish markaziga yuborildi. Ma’lumotlarni ko‘rib chiqib, tez orada bog‘lanamiz!',
+        ok_cash: '💵 To‘lov naqd pul orqali rasmiylashtiriladi.'
+      },
+      en: {
+        hero_h: 'Explore the Universe of Travel with <span>Silk Road Horizons</span>',
+        hero_p: 'Top tours from Uzbekistan worldwide. Give yourself an unforgettable vacation and bright emotions with us!',
+        btn_tours: 'Choose Destination', sec_tours: 'Popular Destinations',
+        sec_tours_sub: 'Hover over photos to view or click dots',
+        f_all: 'All', f_beach: 'Beaches', f_city: 'Cities', f_nature: 'Nature & Alps', f_hist: 'History',
+        lbl_name: 'Full Name (letters only)', lbl_id: 'ID Card (Series & 7 digits)',
+        lbl_phone: 'Phone Number (digits and +, - only)',
+        cash_info: '💵 Payment will be processed in cash upon booking confirmation.',
+        btn_submit: 'Book Ticket', cont_h: 'Our Contacts',
+        cont_p: 'Reach out anytime — we will help you with hotels, flights, and travel insurance.',
+        addr: 'Samarkand / Tashkent • Open 24/7', book_card: 'Book Now',
+        ok_title: 'Booking Launched into Orbit!',
+        ok_desc: 'Your itinerary has been sent to Silk Road Horizons Mission Control. We are processing it and will contact you shortly!',
+        ok_cash: '💵 Payment will be completed in cash.'
+      }
+    };
+
+    let lang = 'ru', cat = 'all', activeTourTitle = '', activeTourImgs = [], activeTimers = {};
+
+    function render() {
+      const grid = document.getElementById('toursGrid');
+      grid.innerHTML = '';
+      
+      TOURS.forEach((t, index) => {
+        const [title, desc] = t[lang];
+        if (cat === 'all' || t.cat === cat) {
+          let imgsHtml = '';
+          let dotsHtml = '';
+          t.imgs.forEach((imgUrl, imgIdx) => {
+            imgsHtml += `<img src="${imgUrl}" class="${imgIdx === 0 ? 'active' : ''}" alt="${title}">`;
+            dotsHtml += `<button class="g-dot ${imgIdx === 0 ? 'active' : ''}" onclick="switchSlide(${index}, ${imgIdx}, event)"></button>`;
+          });
+
+          grid.innerHTML += `
+            <div class="card" id="tour-card-${index}" onmouseenter="startHover(${index})" onmouseleave="stopHover(${index})">
+              <div class="gallery-wrap">
+                ${imgsHtml}
+                <div class="gallery-btns">${dotsHtml}</div>
+              </div>
+              <div class="card-body">
+                <h3>${title}</h3>
+                <p>${desc}</p>
+                <div class="card-foot">
+                  <span class="price">${t.price}</span>
+                  <button class="btn btn-main" onclick="openModal('${title.replace(/'/g, "\\'")}', '${t.price}', ${index})">${TEXT[lang].book_card}</button>
+                </div>
+              </div>
+            </div>`;
+        }
+      });
+    }
+
+    // Ручное переключение слайда по точкам
+    window.switchSlide = function(cardIdx, imgIdx, e) {
+      if(e) e.stopPropagation();
+      const card = document.getElementById(`tour-card-${cardIdx}`);
+      if (!card) return;
+      const imgs = card.querySelectorAll('.gallery-wrap img');
+      const dots = card.querySelectorAll('.g-dot');
+      
+      imgs.forEach((img, i) => img.classList.toggle('active', i === imgIdx));
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === imgIdx));
+      card.dataset.currentIndex = imgIdx;
+    };
+
+    // Автоматическая смена фото при наведении мыши
+    window.startHover = function(index) {
+      const card = document.getElementById(`tour-card-${index}`);
+      if (!card) return;
+      let currentIdx = parseInt(card.dataset.currentIndex || 0);
+      const totalImgs = TOURS[index].imgs.length;
+
+      activeTimers[index] = setInterval(() => {
+        currentIdx = (currentIdx + 1) % totalImgs;
+        window.switchSlide(index, currentIdx);
+      }, 2000);
+    };
+
+    window.stopHover = function(index) {
+      if (activeTimers[index]) {
+        clearInterval(activeTimers[index]);
+        delete activeTimers[index];
+      }
+    };
+
+    // Автосмена фото для модального окна при наведении
+    let modalTimer = null, modalCurrentIdx = 0;
+    window.startModalHover = function() {
+      modalTimer = setInterval(() => {
+        if (activeTourImgs.length === 0) return;
+        modalCurrentIdx = (modalCurrentIdx + 1) % activeTourImgs.length;
+        window.switchModalSlide(modalCurrentIdx);
+      }, 2000);
+    };
+    window.stopModalHover = function() {
+      if (modalTimer) clearInterval(modalTimer);
+    };
+
+    function setLang(l, btn) {
+      lang = l;
+      document.querySelectorAll('.langs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('[data-i]').forEach(el => {
+        if (TEXT[l][el.dataset.i]) el.innerHTML = TEXT[l][el.dataset.i];
+      });
+      render();
+    }
+
+    function filterTours(c, btn) {
+      cat = c;
+      document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    }
+
+    document.querySelectorAll('.no-num').forEach(inp => {
+      inp.addEventListener('input', () => inp.value = inp.value.replace(/[0-9]/g, ''));
+    });
+
+    document.querySelectorAll('.phone-strict').forEach(inp => {
+      inp.addEventListener('input', () => {
+        inp.value = inp.value.replace(/[^0-9+\s-]/g, '');
+      });
+    });
+
+    function setupIdInputs(seriesId, numId) {
+      const sInput = document.getElementById(seriesId);
+      const nInput = document.getElementById(numId);
+
+      sInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ]/g, '').toUpperCase();
+        e.target.value = val;
+        if (val.length === 2) nInput.focus();
+      });
+
+      nInput.addEventListener('input', (e) => {
+        let val = e.target.value.replace(/[^0-9]/g, '');
+        if (val.length > 7) val = val.slice(0, 7);
+        e.target.value = val;
+      });
+    }
+
+    setupIdInputs('pIdSeries', 'pIdNum');
+
+    function openModal(title, price, tourIdx) {
+      activeTourTitle = `${title} (${price})`;
+      activeTourImgs = TOURS[tourIdx].imgs;
+      modalCurrentIdx = 0;
+      
+      document.getElementById('modalTitle').textContent = title;
+      document.getElementById('modalPrice').textContent = price;
+
+      const modalGallery = document.getElementById('modalGallery');
+      let mImgsHtml = '';
+      let mDotsHtml = '';
+      activeTourImgs.forEach((imgUrl, i) => {
+        mImgsHtml += `<img src="${imgUrl}" class="${i === 0 ? 'active' : ''}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:${i===0?1:0}; transition:opacity 0.5s;" alt="Tour Photo">`;
+        mDotsHtml += `<button class="g-dot ${i === 0 ? 'active' : ''}" onclick="switchModalSlide(${i}, event)"></button>`;
+      });
+      modalGallery.innerHTML = mImgsHtml + `<div class="gallery-btns" style="position:absolute; bottom:8px; left:0; right:0; display:flex; justify-content:center; gap:6px; z-index:5;">${mDotsHtml}</div>`;
+
+      document.getElementById('bookModal').classList.add('open');
+    }
+
+    window.switchModalSlide = function(imgIdx, e) {
+      if(e) e.stopPropagation();
+      modalCurrentIdx = imgIdx;
+      const modalGallery = document.getElementById('modalGallery');
+      const imgs = modalGallery.querySelectorAll('img');
+      const dots = modalGallery.querySelectorAll('.g-dot');
+      imgs.forEach((img, i) => {
+        img.classList.toggle('active', i === imgIdx);
+        img.style.opacity = i === imgIdx ? '1' : '0';
+      });
+      dots.forEach((dot, i) => dot.classList.toggle('active', i === imgIdx));
+    };
+
+    function closeModals() {
+      document.querySelectorAll('.modal-bg').forEach(m => m.classList.remove('open'));
+      stopModalHover();
+    }
+
+    function submitBooking(e) {
+      e.preventDefault();
+      const name = document.getElementById('pName').value.trim();
+      const idSeries = document.getElementById('pIdSeries').value.trim();
+      const idNum = document.getElementById('pIdNum').value.trim();
+      
+      if (idNum.length !== 7) {
+        alert('Номер ID-карты должен состоять ровно из 7 цифр!');
+        return;
+      }
+
+      const idCard = `${idSeries} ${idNum}`;
+      const phone = document.getElementById('pPhone').value.trim();
+
+      fetch('https://formsubmit.co/ajax/donierpahlavonov69@gmail.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: `Новая бронь тура: ${activeTourTitle}`,
+          Клиент: name,
+          ID_карта: idCard,
+          Телефон: phone,
+          Направление: activeTourTitle,
+          Оплата: 'Наличными'
+        })
+      }).catch(() => {});
+
+      closeModals();
+      document.getElementById('ticketSummary').innerHTML = `
+        <strong>👤 Пассажир:</strong> ${name}<br>
+        <strong>🪪 ID-карта:</strong> ${idCard}<br>
+        <strong>📞 Телефон:</strong> ${phone}<br>
+        <strong>✈️ Маршрут:</strong> ${activeTourTitle}<br>
+        <strong>💵 Оплата:</strong> Наличными
+      `;
+      const tgMsg = encodeURIComponent(`Здравствуйте! Новая бронь:\n👤 ${name}\n🪪 ID: ${idCard}\n📞 ${phone}\n✈️ Тур: ${activeTourTitle}\n💵 Оплата: Наличными`);
+      document.getElementById('tgConfirmBtn').href = `https://t.me/doni_221?text=${tgMsg}`;
+      document.getElementById('successModal').classList.add('open');
+      e.target.reset();
+    }
+
+    const canvas = document.getElementById('space'), ctx = canvas.getContext('2d');
+    let w, h, stars = [];
+    function initSpace() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      stars = Array.from({ length: w < 600 ? 40 : 75 }, () => ({
+        x: Math.random() * w, y: Math.random() * h, r: Math.random() * 1.5 + 0.5, s: Math.random() * 0.25 + 0.08
+      }));
+    }
+    function loop() {
+      if (!document.hidden) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#fff';
+        stars.forEach(st => {
+          st.y -= st.s; if (st.y < 0) st.y = h;
+          ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2); ctx.fill();
+        });
+      }
+      requestAnimationFrame(loop);
+    }
+    window.addEventListener('resize', initSpace);
+    initSpace(); loop(); render();
+  </script>
+</body>
+</html>
